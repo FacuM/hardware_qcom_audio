@@ -3137,9 +3137,6 @@ uint32_t platform_get_pcm_offload_buffer_size(audio_offload_info_t* info)
     uint32_t bits_per_sample = 16;
     uint32_t pcm_offload_time = PCM_OFFLOAD_BUFFER_DURATION_FOR_SMALL_BUFFERS;
 
-    if (info->format == AUDIO_FORMAT_PCM_24_BIT_OFFLOAD) {
-        bits_per_sample = 32;
-    }
     if (!info->has_video) {
         pcm_offload_time = PCM_OFFLOAD_BUFFER_DURATION_MAX;
     } else if (info->has_video && info->is_streaming) {

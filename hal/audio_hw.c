@@ -400,8 +400,6 @@ static bool is_supported_format(audio_format_t format)
         format == AUDIO_FORMAT_AAC_LC ||
         format == AUDIO_FORMAT_AAC_HE_V1 ||
         format == AUDIO_FORMAT_AAC_HE_V2 ||
-        format == AUDIO_FORMAT_PCM_16_BIT_OFFLOAD ||
-        format == AUDIO_FORMAT_PCM_24_BIT_OFFLOAD ||
 #ifdef FLAC_OFFLOAD_ENABLED
         format == AUDIO_FORMAT_FLAC ||
 #endif
@@ -425,9 +423,6 @@ static int get_snd_codec_id(audio_format_t format)
         break;
     case AUDIO_FORMAT_AAC:
         id = SND_AUDIOCODEC_AAC;
-        break;
-    case AUDIO_FORMAT_PCM_OFFLOAD:
-        id = SND_AUDIOCODEC_PCM;
         break;
 #ifdef FLAC_OFFLOAD_ENABLED
     case AUDIO_FORMAT_FLAC:
@@ -2902,13 +2897,6 @@ static int adev_open_output_stream(struct audio_hw_device *dev,
             out->compr_config.codec->id =
                 get_snd_codec_id(config->offload_info.format);
 
-        if (audio_is_offload_pcm(config->offload_info.format)) {
-            out->compr_config.fragment_size =
-                       platform_get_pcm_offload_buffer_size(&config->offload_info);
-        } else {
-            out->compr_config.fragment_size =
-                       platform_get_compress_offload_buffer_size(&config->offload_info);
-        }
         out->compr_config.fragments = COMPRESS_OFFLOAD_NUM_FRAGMENTS;
 #ifdef NEW_SAMPLE_RATE_ENABLED
         out->compr_config.codec->sample_rate =
@@ -2926,10 +2914,6 @@ static int adev_open_output_stream(struct audio_hw_device *dev,
 
         if (config->offload_info.format == AUDIO_FORMAT_AAC)
             out->compr_config.codec->format = SND_AUDIOSTREAMFORMAT_RAW;
-        if (config->offload_info.format == AUDIO_FORMAT_PCM_16_BIT_OFFLOAD)
-            out->compr_config.codec->format = SNDRV_PCM_FORMAT_S16_LE;
-        if(config->offload_info.format == AUDIO_FORMAT_PCM_24_BIT_OFFLOAD)
-            out->compr_config.codec->format = SNDRV_PCM_FORMAT_S24_LE;
 
         if (out->bit_width == 24)
             out->compr_config.codec->format = SNDRV_PCM_FORMAT_S24_LE;
